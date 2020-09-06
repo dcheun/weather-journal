@@ -1,6 +1,8 @@
 // Setup empty JS object to act as endpoint for all routes
 projectData = {};
 const PORT = 3000;
+// To hold new data entries.
+const data = [];
 
 // Require Express to run server and routes
 const express = require("express");
@@ -10,8 +12,8 @@ const cors = require("cors");
 // Start up an instance of app
 const app = express();
 
-/* Middleware*/
-//Here we are configuring express to use body-parser as middle-ware.
+// Middleware
+// Here we are configuring express to use body-parser as middle-ware.
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse applicaton/json
@@ -23,18 +25,26 @@ app.use(cors());
 // Initialize the main project folder
 app.use(express.static("website"));
 
+// Get projectData - most recent entry
 app.get("/data", (req, res) => {
-  console.log("get /data");
-  console.log(projectData);
   res.send(projectData);
 });
 
+// Get all data
+app.get("/all", (req, res) => {
+  res.send(data);
+});
+
+// Post route to add new data.
 app.post("/addData", (req, res) => {
-  projectData.temperature = req.body.temperature;
-  projectData.date = req.body.date;
-  projectData.userResponse = req.body.userResponse;
-  console.log(`server: projectData=`);
-  console.log(projectData);
+  newEntry = {
+    temperature: req.body.temperature,
+    date: req.body.date,
+    userResponse: req.body.userResponse,
+  };
+  data.push(newEntry);
+  // Save latest entry to projectData.
+  projectData = { ...newEntry };
   res.send(projectData);
 });
 
@@ -42,25 +52,3 @@ app.post("/addData", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server started on localhost port ${3000}`);
 });
-
-// Setup empty JS object to act as endpoint for all routes
-// Express to run server and routes
-
-// Start up an instance of app
-
-/* Dependencies */
-/* Middleware*/
-
-//Here we are configuring express to use body-parser as middle-ware.
-// Cors for cross origin allowance
-
-// Initialize the main project folder
-
-// Spin up the server
-// Callback to debug
-
-// Initialize all route with a callback function
-
-// Callback function to complete GET '/all'
-
-// Post Route

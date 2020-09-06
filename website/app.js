@@ -3,7 +3,7 @@ const BASE_URL =
   "http://api.openweathermap.org/data/2.5/weather?units=imperial&zip=";
 
 // Personal API Key for OpenWeatherMap API
-const API_KEY = "27295fbda349fc7611b10b1617a5fc48";
+const API_KEY = atob("MDY5ZDc5Y2M0NGYwZTBhMjNlMjc0ZjBkNDJlYTRhZDU=");
 
 // Event listener to add function to existing HTML DOM element
 document.getElementById("generate").addEventListener("click", performAction);
@@ -22,8 +22,8 @@ function performAction(e) {
   getAPIData(BASE_URL, API_KEY, zip, feelings)
     // Post to data
     .then((data) => {
-      console.log(`performAction: data=`);
-      console.log(data);
+      data.date = getDate();
+      data.userResponse = feelings;
       postData("/addData", data);
     })
     // Retrieve data and update DOM elements with content
@@ -40,16 +40,8 @@ const getAPIData = async (BASE_URL, key, zip, feelings) => {
   const res = await fetch(`${BASE_URL}${zip},us&appid=${key}`);
   try {
     const data = await res.json();
-    console.log(data);
-    console.log({
-      temperature: data.main.temp,
-      date: getDate(),
-      userResponse: feelings,
-    });
     return {
       temperature: data.main.temp,
-      date: getDate(),
-      userResponse: feelings,
     };
   } catch (error) {
     console.log("error", error);
@@ -70,8 +62,6 @@ const postData = async (url = "", data = {}) => {
 
   try {
     const newData = await res.json();
-    console.log("postData newData:");
-    console.log(newData);
     return newData;
   } catch (error) {
     console.log("error", error);
@@ -84,8 +74,6 @@ const getData = async (url = "") => {
   const res = await fetch(url);
   try {
     const data = await res.json();
-    console.log("getData");
-    console.log(data);
     return data;
   } catch (error) {
     console.log("error", error);
@@ -95,16 +83,14 @@ const getData = async (url = "") => {
 const updateUI = async () => {
   const data = await getData("/data");
   try {
-    console.log("updateUI");
-    console.log(data);
     // Update text of UI elements:
-    document.getElementById("date").innerText = `Date: ${data.date}`;
+    document.getElementById("date").innerHTML = `Date: ${data.date}`;
     document.getElementById(
       "temp"
-    ).innerText = `Temperature: ${data.temperature} C`;
+    ).innerHTML = `Temperature: ${data.temperature} C`;
     document.getElementById(
       "content"
-    ).innerText = `Feelings: ${data.userResponse}`;
+    ).innerHTML = `Feelings: ${data.userResponse}`;
   } catch (error) {
     console.log("error", error);
   }
